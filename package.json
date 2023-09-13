@@ -9,23 +9,30 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@effector/next": "^0.5.1",
-    "@types/node": "20.5.9",
-    "@types/react": "18.2.21",
-    "@types/react-dom": "18.2.7",
+    "@effector/next": "0.6.0",
+    "@farfetched/core": "0.9.0",
     "autoprefixer": "10.4.15",
+    "class-variance-authority": "^0.7.0",
     "effector": "^22.8.6",
-    "effector-react": "^22.5.3",
-    "eslint": "8.48.0",
-    "eslint-config-next": "13.4.19",
+    "effector-react": "^22.5.4",
     "next": "13.4.19",
     "postcss": "8.4.29",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "tailwindcss": "3.3.3",
-    "typescript": "5.2.2"
+    "tailwindcss": "3.3.3"
   },
   "devDependencies": {
-    "daisyui": "^3.7.3"
+    "@types/node": "20.6.0",
+    "@types/react": "18.2.21",
+    "@types/react-dom": "18.2.7",
+    "@typescript-eslint/eslint-plugin": "^6.7.0",
+    "@typescript-eslint/parser": "^6.7.0",
+    "eslint": "8.49.0",
+    "eslint-config-next": "13.4.19",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-effector": "^0.11.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "prettier": "3.0.3",
+    "typescript": "5.2.2"
   }
 }

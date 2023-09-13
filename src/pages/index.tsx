@@ -1,7 +1,7 @@
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
+import Image from "next/image";
+import { Inter } from "next/font/google";
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
   return (
@@ -20,7 +20,7 @@ export default function Home() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            By{' '}
+            By{" "}
             <Image
               src="/vercel.svg"
               alt="Vercel Logo"
@@ -34,11 +34,23 @@ export default function Home() {
       </div>
 
       <div className="m-10 space-y-6">
-        <input className="input input-sm input-bordered" type="number" value="5" />
+        <input
+          className="input input-sm input-bordered"
+          type="number"
+          value="5"
+        />
         <div className="relative w-40">
-          <button className="absolute left-0 top-0 rounded-r-none btn btn-square">-</button>
-          <input type="text" className="w-full text-center px-12 input input-bordered" value="5"/>
-          <button className="absolute right-0 top-0 rounded-l-none btn btn-square">+</button>
+          <button className="absolute left-0 top-0 rounded-r-none btn btn-square">
+            -
+          </button>
+          <input
+            type="text"
+            className="w-full text-center px-12 input input-bordered"
+            value="5"
+          />
+          <button className="absolute right-0 top-0 rounded-l-none btn btn-square">
+            +
+          </button>
         </div>
       </div>
 
@@ -61,7 +73,7 @@ export default function Home() {
           rel="noopener noreferrer"
         >
           <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{' '}
+            Docs{" "}
             <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
               -&gt;
             </span>
@@ -78,7 +90,7 @@ export default function Home() {
           rel="noopener noreferrer"
         >
           <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{' '}
+            Learn{" "}
             <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
               -&gt;
             </span>
@@ -95,7 +107,7 @@ export default function Home() {
           rel="noopener noreferrer"
         >
           <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{' '}
+            Templates{" "}
             <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
               -&gt;
             </span>
@@ -112,7 +124,7 @@ export default function Home() {
           rel="noopener noreferrer"
         >
           <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{' '}
+            Deploy{" "}
             <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
               -&gt;
             </span>
@@ -123,5 +135,5 @@ export default function Home() {
         </a>
       </div>
     </main>
-  )
+  );
 }
