@@ -5,8 +5,6 @@ export default function Main() {
 }
 
 export async function getStaticProps() {
-  // By returning { props: { posts } }, the Blog component
-  // will receive `posts` as a prop at build time
   return {
     props: {},
   };

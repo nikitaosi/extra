@@ -1,4 +1,4 @@
-import '@/shared/ui/globals.css';
+import '@/shared/ui/styles/globals.css';
 import { EffectorNext } from '@effector/next';
 import type { AppProps } from 'next/app';
 import { BaseLayout } from '@/widgets/layouts';

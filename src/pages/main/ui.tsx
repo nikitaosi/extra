@@ -1,14 +1,25 @@
 import dayjs from 'dayjs';
 import type { NextPage } from 'next';
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { Dispatch, SetStateAction, useState } from 'react';
+import { FieldValues, useForm } from 'react-hook-form';
+import { Button } from '@/shared/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from '@/shared/ui/dialog';
+import {
+  FormProvider,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/shared/ui/form';
+import { Input } from '@/shared/ui/input';
 import {
   Table,
   TableBody,
@@ -17,7 +28,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from '@/shared/ui/table';
 
 const DashboardTable = ({
   expenses,
@@ -31,21 +42,83 @@ const DashboardTable = ({
         {/* <TableHead className="w-[100px]">Invoice</TableHead> */}
         {/* <TableHead>Status</TableHead> */}
         {/* <TableHead>Method</TableHead> */}
-        <TableHead className="text-right">Amount</TableHead>
+        <TableHead className='text-right'>Amount</TableHead>
       </TableRow>
     </TableHeader>
     <TableBody>
-      {expenses.map((expence) => (
-        <TableRow key={expence.id}>
+      {expenses.map((expense) => (
+        <TableRow key={expense.id}>
           {/* <TableCell className="font-medium">INV001</TableCell> */}
           {/* <TableCell>Paid</TableCell> */}
           {/* <TableCell>Credit Card</TableCell> */}
-          <TableCell className="text-right">{expence.value}</TableCell>
+          <TableCell className='text-right'>{expense.value}</TableCell>
         </TableRow>
       ))}
     </TableBody>
   </Table>
 );
+
+const Form = ({
+  expense,
+  setExpense,
+  setOpened,
+}: {
+  expense: number;
+  setExpense: Dispatch<SetStateAction<number>>;
+  setOpened: Dispatch<SetStateAction<boolean>>;
+}) => {
+  const form = useForm();
+
+  function onSubmit(values: FieldValues): FieldValues {
+    setOpened(false);
+    console.log(values);
+    return values;
+  }
+
+  return (
+    <FormProvider {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
+        <FormField
+          control={form.control}
+          name='value'
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Value</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder='100'
+                  type='number'
+                  autoComplete='off'
+                  {...field}
+                  value={expense}
+                  onChange={(e) => setExpense(Number(e.target.value))}
+                />
+              </FormControl>
+              <FormDescription>How much did you spend?</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name='description'
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Description</FormLabel>
+              <FormControl>
+                <Input placeholder='food' {...field} />
+              </FormControl>
+              <FormDescription>
+                Add description for expense (optional)
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </form>
+    </FormProvider>
+  );
+};
 
 let arrId: number = 0;
 
@@ -54,36 +127,37 @@ export const MainPage: NextPage = () => {
     Array<{ id: number; value: number }>
   >([]);
   const [expense, setExpense] = useState<number>(0);
+  const [opened, setOpened] = useState<boolean>(false);
 
+  const addExpense = () => {
+    setExpensesArr([
+      ...expensesArr,
+      {
+        id: (arrId += 1),
+        value: expense,
+      },
+    ]);
+    setOpened(false);
+  };
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <Dialog>
-        <DialogTrigger className="z-100 fixed top-[20px] right-[20px] flex h-[64px] w-[64px] items-center justify-between rounded-full bg-green-300 p-[12px] text-sm font-medium transition shadow-lg hover:bg-green-500 sm:h-[48px] sm:w-[48px]">
+    <main className='flex min-h-screen flex-col items-center justify-between p-24'>
+      <Dialog open={opened} onOpenChange={setOpened}>
+        <DialogTrigger
+          onClick={() => setOpened(true)}
+          className='z-100 fixed top-[20px] right-[20px] flex h-[64px] w-[64px] items-center justify-between rounded-full p-[12px] text-sm font-medium transition shadow-lg dark:hover:bg-black sm:h-[48px] sm:w-[48px]'
+        >
           add
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>How much did you spend?</DialogTitle>
+            <DialogTitle>Add new expense</DialogTitle>
           </DialogHeader>
-          <input
-            type="number"
-            id="expence"
-            className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="" required [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
-            value={expense}
-            onChange={(e) => setExpense(Number(e.target.value))}
+          <Form
+            expense={expense}
+            setExpense={setExpense}
+            setOpened={setOpened}
           />
-          <Button
-            variant="outline"
-            onClick={() => {
-              setExpensesArr([
-                ...expensesArr,
-                {
-                  id: (arrId += 1),
-                  value: expense,
-                },
-              ]);
-            }}
-          >
+          <Button variant='outline' onClick={() => addExpense()}>
             add
           </Button>
         </DialogContent>

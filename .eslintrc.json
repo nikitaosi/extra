@@ -184,7 +184,7 @@
     ],
     "jsx-quotes": [
       2,
-      "prefer-double"
+      "prefer-single"
     ],
     "jsx-a11y/alt-text": [
       2,
