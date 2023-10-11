@@ -183,7 +183,7 @@
       }
     ],
     "jsx-quotes": [
-      2,
+      1,
       "prefer-single"
     ],
     "jsx-a11y/alt-text": [
