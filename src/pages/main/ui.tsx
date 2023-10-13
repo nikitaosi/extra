@@ -12,6 +12,7 @@ import {
 } from 'react';
 import { FieldValues, useForm } from 'react-hook-form';
 import { Button } from '@/shared/ui/button';
+import { DatePicker } from '@/shared/ui/datepicker';
 import {
   Dialog,
   DialogContent,
@@ -30,6 +31,13 @@ import {
 } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/shared/ui/select';
+import {
   Table,
   TableBody,
   TableCaption,
@@ -42,8 +50,10 @@ import { ModeToggle } from '@/shared/ui/theme-toggler';
 
 const $formOpened = createStore(false);
 const openModal = hotkey('alt+a');
+const submitModal = hotkey('enter');
 
 $formOpened.on(openModal, (opened) => !opened);
+$formOpened.on(submitModal, (opened) => !opened);
 
 const DashboardTable = ({
   expenses,
@@ -76,10 +86,12 @@ const DashboardTable = ({
 const Form = ({
   expense,
   setExpense,
+  setOpened,
   addExpense,
 }: {
   expense: number;
   setExpense: Dispatch<SetStateAction<number>>;
+  setOpened: Dispatch<SetStateAction<boolean>>;
   addExpense: () => void;
 }) => {
   const form = useForm();
@@ -88,6 +100,7 @@ const Form = ({
 
   const handleKey = (e: KeyboardEvent) => {
     if (e.key === 'Enter') {
+      setOpened(false);
       onSubmit({});
     }
   };
@@ -99,7 +112,7 @@ const Form = ({
           control={form.control}
           name='value'
           render={({ field }) => (
-            <FormItem>
+            <FormItem className='space-y-[0px]'>
               <FormLabel>Value</FormLabel>
               <FormControl>
                 <Input
@@ -117,14 +130,79 @@ const Form = ({
             </FormItem>
           )}
         />
+        <div className='flex flex-row space-x-8'><FormField
+          control={form.control}
+          name='currency'
+          render={() => (
+            <FormItem className='w-full'>
+              <FormLabel>Currency</FormLabel>
+              <FormControl>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue defaultValue='lari' placeholder='₾' />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value='lari'>₾</SelectItem>
+                    <SelectItem value='dollar'>$</SelectItem>
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormDescription>
+                Select your currency, lari or dollars
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+          <FormField
+            control={form.control}
+            name='category'
+            render={() => (
+              <FormItem className='w-full'>
+                <FormLabel>Category</FormLabel>
+                <FormControl>
+                  <Select>
+                    <SelectTrigger>
+                      <SelectValue defaultValue='Grocery' placeholder='Grocery' />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value='Grocery'>Grocery</SelectItem>
+                      <SelectItem value='House'>House</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormDescription>
+                  Select category
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        <FormField
+          control={form.control}
+          name='date'
+          render={() => (
+            <FormItem className='space-y-[0px]'>
+              <FormLabel>Date</FormLabel>
+              <FormControl>
+                <DatePicker />
+              </FormControl>
+              <FormDescription>
+                Select date
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name='description'
           render={({ field }) => (
-            <FormItem>
+            <FormItem className='space-y-[0px]'>
               <FormLabel>Description</FormLabel>
               <FormControl>
-                <Input placeholder='food' {...field} />
+                <Input {...field} />
               </FormControl>
               <FormDescription>
                 Add description for expense (optional)
@@ -133,23 +211,7 @@ const Form = ({
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name='currency'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Input placeholder='food' {...field} />
-              </FormControl>
-              <FormDescription>
-                Add description for expense (optional)
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button asChild variant='outline' onClick={() => addExpense()}>
+        <Button variant='outline' onClick={() => addExpense()}>
           <span>add</span>
         </Button>
       </form>
@@ -175,11 +237,12 @@ export const MainPage: NextPage = () => {
         value: expense,
       },
     ]);
+    setOpened(false);
   };
 
   const handleKeyPress = useCallback((event: Event) => {
     // @ts-ignore
-    if (event.altKey && event.key === 'a') {
+    if ((event.altKey && event.key === 'a') || (event.altKey && event.key === 'ф')) {
       setOpened(!opened);
     }
   }, [opened]);
@@ -204,6 +267,7 @@ export const MainPage: NextPage = () => {
               asChild
               variant='secondary'
               className='fixed bottom-[60px] right-[40px]'
+
             >
               <span>add</span>
             </Button>
@@ -216,6 +280,7 @@ export const MainPage: NextPage = () => {
               expense={expense}
               setExpense={setExpense}
               addExpense={addExpense}
+              setOpened={setOpened}
             />
           </DialogContent>
         </Dialog>
