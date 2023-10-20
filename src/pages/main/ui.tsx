@@ -3,13 +3,11 @@ import { createStore } from 'effector';
 import { hotkey } from 'effector-hotkey';
 import type { NextPage } from 'next';
 import {
-  Dispatch,
-  SetStateAction,
   useState,
-  KeyboardEvent,
   useEffect,
   useCallback,
 } from 'react';
+import * as React from 'react';
 import { FieldValues, useForm } from 'react-hook-form';
 import { Button } from '@/shared/ui/button';
 import { DatePicker } from '@/shared/ui/datepicker';
@@ -23,7 +21,6 @@ import {
 import {
   FormProvider,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -37,16 +34,55 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/ui/select';
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/shared/ui/table';
+import { Textarea } from '@/shared/ui/textarea';
 import { ModeToggle } from '@/shared/ui/theme-toggler';
+import { useToast } from '@/shared/ui/use-toast';
+import { DataTable } from './main-table';
+
+export type Payment = {
+  id: string
+  value: number
+  currency: 'lari' | 'dollar'
+  date: string
+  description: string
+  category: string
+}
+
+const tableData: Payment[] = [
+  {
+    id: 'm5gr84i9',
+    value: 34,
+    currency: 'lari',
+    date: '09.2023',
+    description: 'cookies',
+    category: 'grocery',
+  },
+
+  {
+    id: 'm5gr84i',
+    value: 2,
+    currency: 'lari',
+    date: '08.2023',
+    description: 'chocolate',
+    category: 'grocery',
+  },
+  {
+    id: 'm5gr84',
+    value: 13,
+    currency: 'lari',
+    date: '10.2023',
+    description: 'milk',
+    category: 'grocery',
+  },
+  {
+    id: 'm5gr8',
+    value: 100,
+    currency: 'lari',
+    date: '10.2023',
+    description: 'water',
+    category: 'grocery',
+  },
+];
 
 const $formOpened = createStore(false);
 const openModal = hotkey('alt+a');
@@ -55,115 +91,95 @@ const submitModal = hotkey('enter');
 $formOpened.on(openModal, (opened) => !opened);
 $formOpened.on(submitModal, (opened) => !opened);
 
-const DashboardTable = ({
-  expenses,
-}: {
-  expenses: Array<{ id: number; value: number }>;
-}) => (
-  <Table>
-    <TableCaption>Today is {dayjs().format('DD MMMM')}</TableCaption>
-    <TableHeader>
-      <TableRow>
-        {/* <TableHead className="w-[100px]">Invoice</TableHead> */}
-        {/* <TableHead>Status</TableHead> */}
-        {/* <TableHead>Method</TableHead> */}
-        <TableHead className='text-right'>Amount</TableHead>
-      </TableRow>
-    </TableHeader>
-    <TableBody>
-      {expenses.map((expense) => (
-        <TableRow key={expense.id}>
-          {/* <TableCell className="font-medium">INV001</TableCell> */}
-          {/* <TableCell>Paid</TableCell> */}
-          {/* <TableCell>Credit Card</TableCell> */}
-          <TableCell className='text-right'>{expense.value}</TableCell>
-        </TableRow>
-      ))}
-    </TableBody>
-  </Table>
-);
-
-const Form = ({
-  expense,
-  setExpense,
-  setOpened,
-  addExpense,
-}: {
-  expense: number;
-  setExpense: Dispatch<SetStateAction<number>>;
-  setOpened: Dispatch<SetStateAction<boolean>>;
-  addExpense: () => void;
-}) => {
+const Form = () => {
   const form = useForm();
-
-  const onSubmit = (values: FieldValues): FieldValues => values;
-
-  const handleKey = (e: KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      setOpened(false);
-      onSubmit({});
-    }
+  const { toast } = useToast();
+  const onSubmit = (values: FieldValues): FieldValues => {
+    console.log(values);
+    // setOpened(false);
+    toast({
+      title: 'Done ',
+      description: 'Your expense has been added',
+    });
+    return values;
   };
+
+  // const handleKey = (e: KeyboardEvent) => {
+  //   if (e.key === 'Enter') {
+  //     setOpened(false);
+  //     onSubmit();
+  //   }
+  // };
 
   return (
     <FormProvider {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
+      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-3'>
         <FormField
           control={form.control}
           name='value'
-          render={({ field }) => (
-            <FormItem className='space-y-[0px]'>
+          defaultValue={100}
+          render={({ field: { onChange, name, value } }) => (
+            <FormItem className='space-y-1'>
               <FormLabel>Value</FormLabel>
               <FormControl>
                 <Input
                   placeholder='100'
                   type='number'
                   autoComplete='off'
-                  {...field}
-                  value={expense}
-                  onKeyDown={() => handleKey}
-                  onChange={(e) => setExpense(Number(e.target.value))}
+                  value={value}
+                  onChange={onChange}
+                  name={name}
+                  // onKeyDown={() => handleKey}
                 />
               </FormControl>
-              <FormDescription>How much did you spend?</FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
-        <div className='flex flex-row space-x-8'><FormField
-          control={form.control}
-          name='currency'
-          render={() => (
-            <FormItem className='w-full'>
-              <FormLabel>Currency</FormLabel>
-              <FormControl>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue defaultValue='lari' placeholder='₾' />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value='lari'>₾</SelectItem>
-                    <SelectItem value='dollar'>$</SelectItem>
-                  </SelectContent>
-                </Select>
-              </FormControl>
-              <FormDescription>
-                Select your currency, lari or dollars
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className='flex flex-row space-x-4'>
+          <FormField
+            control={form.control}
+            name='currency'
+            defaultValue='lari'
+            render={({ field: { onChange, name, value } }) => (
+              <FormItem className='w-full'>
+                <FormLabel>Currency</FormLabel>
+                <FormControl>
+                  <Select
+                    onValueChange={onChange}
+                    name={name}
+                    value={value}
+                    defaultValue='lari'
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder='₾' />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value='lari'>₾</SelectItem>
+                      <SelectItem value='dollar'>$</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name='category'
-            render={() => (
+            defaultValue='Grocery'
+            render={({ field: { onChange, name, value } }) => (
               <FormItem className='w-full'>
                 <FormLabel>Category</FormLabel>
                 <FormControl>
-                  <Select>
+                  <Select
+                    onValueChange={onChange}
+                    name={name}
+                    value={value}
+                    defaultValue='Grocery'
+                  >
                     <SelectTrigger>
-                      <SelectValue defaultValue='Grocery' placeholder='Grocery' />
+                      <SelectValue placeholder='Grocery' />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value='Grocery'>Grocery</SelectItem>
@@ -171,9 +187,6 @@ const Form = ({
                     </SelectContent>
                   </Select>
                 </FormControl>
-                <FormDescription>
-                  Select category
-                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -182,15 +195,12 @@ const Form = ({
         <FormField
           control={form.control}
           name='date'
-          render={() => (
-            <FormItem className='space-y-[0px]'>
+          render={({ field: { onChange, value } }) => (
+            <FormItem className='space-y-1'>
               <FormLabel>Date</FormLabel>
               <FormControl>
-                <DatePicker />
+                <DatePicker date={value || new Date()} setDate={onChange} />
               </FormControl>
-              <FormDescription>
-                Select date
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -198,20 +208,18 @@ const Form = ({
         <FormField
           control={form.control}
           name='description'
+          defaultValue=''
           render={({ field }) => (
-            <FormItem className='space-y-[0px]'>
+            <FormItem className='space-y-1'>
               <FormLabel>Description</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Textarea placeholder='another spending' {...field} />
               </FormControl>
-              <FormDescription>
-                Add description for expense (optional)
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button variant='outline' onClick={() => addExpense()}>
+        <Button variant='outline' onClick={onSubmit}>
           <span>add</span>
         </Button>
       </form>
@@ -219,26 +227,26 @@ const Form = ({
   );
 };
 
-let arrId: number = 0;
+// const arrId: number = 0;
 
 export const MainPage: NextPage = () => {
-  const [expensesArr, setExpensesArr] = useState<
-    Array<{ id: number; value: number }>
-  >([]);
-  const [expense, setExpense] = useState<number>(0);
+  // const [expensesArr, setExpensesArr] = useState<
+  //   Array<{ id: number; value: number }>
+  // >([]);
+  // const [expense, setExpense] = useState<number>(0);
   const [opened, setOpened] = useState<boolean>(false);
   // const openedStore = useUnit($formOpened);
 
-  const addExpense = () => {
-    setExpensesArr([
-      ...expensesArr,
-      {
-        id: (arrId += 1),
-        value: expense,
-      },
-    ]);
-    setOpened(false);
-  };
+  // const addExpense = () => {
+  //   setExpensesArr([
+  //     ...expensesArr,
+  //     {
+  //       id: (arrId += 1),
+  //       value: expense,
+  //     },
+  //   ]);
+  //   setOpened(false);
+  // };
 
   const handleKeyPress = useCallback((event: Event) => {
     // @ts-ignore
@@ -260,14 +268,15 @@ export const MainPage: NextPage = () => {
   return (
     <>
       <ModeToggle />
-      <main className='flex flex-col items-center justify-between p-24'>
+      <main className='flex flex-col items-center justify-between p-8'>
+        <span>Today is {dayjs().format('DD MMMM')}</span>
+
         <Dialog open={opened} onOpenChange={setOpened}>
           <DialogTrigger>
             <Button
               asChild
-              variant='secondary'
-              className='fixed bottom-[60px] right-[40px]'
-
+              variant='outline'
+              className='fixed bottom-12 right-8 lg:bottom-[40px] lg:right-[40px] h-9'
             >
               <span>add</span>
             </Button>
@@ -276,15 +285,10 @@ export const MainPage: NextPage = () => {
             <DialogHeader>
               <DialogTitle>Add new expense</DialogTitle>
             </DialogHeader>
-            <Form
-              expense={expense}
-              setExpense={setExpense}
-              addExpense={addExpense}
-              setOpened={setOpened}
-            />
+            <Form />
           </DialogContent>
         </Dialog>
-        <DashboardTable expenses={expensesArr} />
+        <DataTable data={tableData} />
       </main>
     </>
   );

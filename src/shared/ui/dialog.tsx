@@ -2,7 +2,7 @@ import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { clsx } from 'clsx';
 import { X } from 'lucide-react';
 import * as React from 'react';
-
+// #TODO add changes from this link to update component - https://github.com/shadcn-ui/ui/pull/1606/commits/ac1860404cea10e4f68b49e2ee7514e056d700b7
 const Dialog = DialogPrimitive.Root;
 
 const DialogTrigger = DialogPrimitive.Trigger;
