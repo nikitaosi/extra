@@ -9,6 +9,7 @@ import {
   FieldValues,
   FormProvider,
   useFormContext,
+  SubmitHandler,
 } from 'react-hook-form';
 
 import { Label } from '@/shared/ui/label';
@@ -169,4 +170,5 @@ export {
   FormDescription,
   FormMessage,
   FormField,
+  type SubmitHandler,
 };

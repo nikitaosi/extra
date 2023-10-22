@@ -5,10 +5,10 @@ import type { NextPage } from 'next';
 import {
   useState,
   useEffect,
-  useCallback,
+  useCallback, Dispatch, useId,
 } from 'react';
 import * as React from 'react';
-import { FieldValues, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { Button } from '@/shared/ui/button';
 import { DatePicker } from '@/shared/ui/datepicker';
 import {
@@ -25,6 +25,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  type SubmitHandler,
 } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import {
@@ -37,52 +38,7 @@ import {
 import { Textarea } from '@/shared/ui/textarea';
 import { ModeToggle } from '@/shared/ui/theme-toggler';
 import { useToast } from '@/shared/ui/use-toast';
-import { DataTable } from './main-table';
-
-export type Payment = {
-  id: string
-  value: number
-  currency: 'lari' | 'dollar'
-  date: string
-  description: string
-  category: string
-}
-
-const tableData: Payment[] = [
-  {
-    id: 'm5gr84i9',
-    value: 34,
-    currency: 'lari',
-    date: '09.2023',
-    description: 'cookies',
-    category: 'grocery',
-  },
-
-  {
-    id: 'm5gr84i',
-    value: 2,
-    currency: 'lari',
-    date: '08.2023',
-    description: 'chocolate',
-    category: 'grocery',
-  },
-  {
-    id: 'm5gr84',
-    value: 13,
-    currency: 'lari',
-    date: '10.2023',
-    description: 'milk',
-    category: 'grocery',
-  },
-  {
-    id: 'm5gr8',
-    value: 100,
-    currency: 'lari',
-    date: '10.2023',
-    description: 'water',
-    category: 'grocery',
-  },
-];
+import { DataTable, type Payment } from './main-table';
 
 const $formOpened = createStore(false);
 const openModal = hotkey('alt+a');
@@ -91,17 +47,18 @@ const submitModal = hotkey('enter');
 $formOpened.on(openModal, (opened) => !opened);
 $formOpened.on(submitModal, (opened) => !opened);
 
-const Form = () => {
-  const form = useForm();
+const Form = ({ setOpened, data, setData }: {setOpened: Dispatch<boolean>,
+  data: Payment[], setData: Dispatch<Payment[]>}) => {
+  const form = useForm<Payment>();
   const { toast } = useToast();
-  const onSubmit = (values: FieldValues): FieldValues => {
-    console.log(values);
-    // setOpened(false);
+  const onSubmit:SubmitHandler<Payment> = (values: Payment) => {
+    setOpened(false);
+    setData([...data, values]);
     toast({
-      title: 'Done ',
+      title: 'Done',
       description: 'Your expense has been added',
+      duration: 3000,
     });
-    return values;
   };
 
   // const handleKey = (e: KeyboardEvent) => {
@@ -219,7 +176,7 @@ const Form = () => {
             </FormItem>
           )}
         />
-        <Button variant='outline' onClick={onSubmit}>
+        <Button variant='outline' onClick={form.handleSubmit(onSubmit)}>
           <span>add</span>
         </Button>
       </form>
@@ -236,7 +193,40 @@ export const MainPage: NextPage = () => {
   // const [expense, setExpense] = useState<number>(0);
   const [opened, setOpened] = useState<boolean>(false);
   // const openedStore = useUnit($formOpened);
-
+  const [tableData, setTableData] = useState<Payment[]>([
+    {
+      id: useId(),
+      value: 34,
+      currency: 'lari',
+      date: new Date(),
+      description: 'cookies',
+      category: 'grocery',
+    },
+    {
+      id: useId(),
+      value: 2,
+      currency: 'lari',
+      date: new Date(),
+      description: 'chocolate',
+      category: 'grocery',
+    },
+    {
+      id: useId(),
+      value: 13,
+      currency: 'lari',
+      date: new Date(),
+      description: 'milk',
+      category: 'grocery',
+    },
+    {
+      id: useId(),
+      value: 100,
+      currency: 'lari',
+      date: new Date(),
+      description: 'water',
+      category: 'grocery',
+    },
+  ]);
   // const addExpense = () => {
   //   setExpensesArr([
   //     ...expensesArr,
@@ -285,7 +275,7 @@ export const MainPage: NextPage = () => {
             <DialogHeader>
               <DialogTitle>Add new expense</DialogTitle>
             </DialogHeader>
-            <Form />
+            <Form setOpened={setOpened} data={tableData} setData={setTableData} />
           </DialogContent>
         </Dialog>
         <DataTable data={tableData} />

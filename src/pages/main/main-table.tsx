@@ -10,6 +10,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import dayjs from 'dayjs';
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from 'lucide-react';
 import * as React from 'react';
 
@@ -38,7 +39,7 @@ export type Payment = {
   id: string
   value: number
   currency: 'lari' | 'dollar'
-  date: string
+  date: Date
   description: string
   category: string
 }
@@ -74,27 +75,21 @@ export const columns: ColumnDef<Payment>[] = [
         <ArrowUpDown className='ml-2 h-4 w-4' />
       </Button>
     ),
-    cell: ({ row }) => <div className='text-center'>{row.getValue('date')}</div>,
+    cell: ({ row }) => <div className='text-center'>{dayjs(row.getValue('date')).format('DD MMM, HH:mm')}</div>,
   },
   {
     accessorKey: 'value',
     header: 'Value',
     cell: ({ row }) => {
       const amount = parseFloat(row.getValue('value'));
+      const { currency } = row.original;
       const formatted = new Intl.NumberFormat('en-US', {
         style: 'currency',
-        currency: 'GEL',
+        currency: `${currency === 'lari' ? 'GEL' : 'USD'}`,
       }).format(amount);
         return <div>{formatted}</div>;
     },
   },
-  // {
-  //   accessorKey: 'currency',
-  //   header: () => <div className='text-right'>Currency</div>,
-  //   cell: ({ row }) => (
-  //     <div className='text-right font-medium'>{row.getValue('currency')}</div>
-  //   ),
-  // },
   {
     accessorKey: 'category',
     header: 'Category',

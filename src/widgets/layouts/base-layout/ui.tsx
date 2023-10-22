@@ -1,5 +1,6 @@
 import { PropsWithChildren } from 'react';
 import { ThemeProvider } from '@/shared/ui/theme-provider';
+import { Toaster } from '@/shared/ui/toaster';
 
 export const BaseLayout = ({ children }: PropsWithChildren) => (
   <>
@@ -11,6 +12,7 @@ export const BaseLayout = ({ children }: PropsWithChildren) => (
       disableTransitionOnChange
     >
       <main className='main'>{children}</main>
+      <Toaster />
     </ThemeProvider>
   </>
 );
