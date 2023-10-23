@@ -2,11 +2,7 @@ import dayjs from 'dayjs';
 import { createStore } from 'effector';
 import { hotkey } from 'effector-hotkey';
 import type { NextPage } from 'next';
-import {
-  useState,
-  useEffect,
-  useCallback, Dispatch, useId,
-} from 'react';
+import { useState, useEffect, useCallback, Dispatch, useId } from 'react';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/shared/ui/button';
@@ -47,11 +43,20 @@ const submitModal = hotkey('enter');
 $formOpened.on(openModal, (opened) => !opened);
 $formOpened.on(submitModal, (opened) => !opened);
 
-const Form = ({ setOpened, data, setData }: {setOpened: Dispatch<boolean>,
-  data: Payment[], setData: Dispatch<Payment[]>}) => {
+const Form = ({
+  setOpened,
+  data,
+  setData,
+}: {
+  setOpened: Dispatch<boolean>;
+  data: Payment[];
+  setData: Dispatch<Payment[]>;
+}) => {
   const form = useForm<Payment>();
   const { toast } = useToast();
-  const onSubmit:SubmitHandler<Payment> = (values: Payment) => {
+  const onSubmit: SubmitHandler<Payment> = (values: Payment) => {
+    // eslint-disable-next-line no-console
+    console.log(values);
     setOpened(false);
     setData([...data, values]);
     toast({
@@ -238,12 +243,17 @@ export const MainPage: NextPage = () => {
   //   setOpened(false);
   // };
 
-  const handleKeyPress = useCallback((event: Event) => {
-    // @ts-ignore
-    if ((event.altKey && event.key === 'a') || (event.altKey && event.key === 'ф')) {
-      setOpened(!opened);
-    }
-  }, [opened]);
+  const handleKeyPress = useCallback(
+    (event: Event) => {
+      if (
+      // @ts-ignore
+        (event.altKey && event.key === 'a') || (event.altKey && event.key === 'ф')
+      ) {
+        setOpened(!opened);
+      }
+    },
+    [opened],
+  );
 
   useEffect(() => {
     // attach the event listener
@@ -275,7 +285,11 @@ export const MainPage: NextPage = () => {
             <DialogHeader>
               <DialogTitle>Add new expense</DialogTitle>
             </DialogHeader>
-            <Form setOpened={setOpened} data={tableData} setData={setTableData} />
+            <Form
+              setOpened={setOpened}
+              data={tableData}
+              setData={setTableData}
+            />
           </DialogContent>
         </Dialog>
         <DataTable data={tableData} />
