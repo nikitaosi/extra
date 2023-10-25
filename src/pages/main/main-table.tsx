@@ -13,7 +13,6 @@ import {
 import dayjs from 'dayjs';
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from 'lucide-react';
 import * as React from 'react';
-
 import { Button } from '@/shared/ui/button';
 import { Checkbox } from '@/shared/ui/checkbox';
 import {
@@ -36,13 +35,22 @@ import {
 } from '@/shared/ui/table';
 
 export type Payment = {
-  id: string
-  value: number
-  currency: 'lari' | 'dollar'
-  date: Date
-  description: string
-  category: string
-}
+  id: string;
+  attributes: {
+    value: number;
+    currency: 'lari' | 'dollar';
+    date: Date;
+    description: string;
+    category: {
+      data: {
+        id: string;
+        attributes: {
+          name: string;
+        };
+      };
+    };
+  };
+};
 
 export const columns: ColumnDef<Payment>[] = [
   {
@@ -75,34 +83,49 @@ export const columns: ColumnDef<Payment>[] = [
         <ArrowUpDown className='ml-2 h-4 w-4' />
       </Button>
     ),
-    cell: ({ row }) => <div className='text-center'>{dayjs(row.getValue('date')).format('DD MMM, HH:mm')}</div>,
+    cell: ({ row }) => (
+      <div className='text-center'>
+        {dayjs(row.original.attributes.date).format('DD MMM, HH:mm')}
+      </div>
+    ),
   },
   {
     accessorKey: 'value',
     header: 'Value',
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue('value'));
-      const { currency } = row.original;
+    cell: ({
+      row: {
+        original: { attributes: row },
+      },
+    }) => {
+      const amount = row.value;
+      const { currency } = row;
       const formatted = new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: `${currency === 'lari' ? 'GEL' : 'USD'}`,
       }).format(amount);
-        return <div>{formatted}</div>;
+      return <div>{formatted}</div>;
     },
   },
   {
     accessorKey: 'category',
     header: 'Category',
-    cell: ({ row }) => (
-      <div className='lowercase'>{row.getValue('category')}</div>
-    ),
+    cell: ({
+      row: {
+        original: { attributes: row },
+      },
+    }) => {
+      const category = row.category.data.attributes.name;
+      return <div className='lowercase'>{category}</div>;
+    },
   },
   {
     accessorKey: 'description',
     header: 'Description',
-    cell: ({ row }) => (
-      <div className='lowercase'>{row.getValue('description')}</div>
-    ),
+    cell: ({
+      row: {
+        original: { attributes: row },
+      },
+    }) => <div className='lowercase'>{row.description}</div>,
   },
   {
     id: 'actions',
@@ -135,14 +158,13 @@ export const columns: ColumnDef<Payment>[] = [
   },
 ];
 
-export function DataTable({ data }: {data: Payment[]}) {
+export function DataTable({ data }: { data: Payment[] }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-
   const table = useReactTable({
     data,
     columns,
@@ -164,15 +186,14 @@ export function DataTable({ data }: {data: Payment[]}) {
 
   return (
     <div className='w-full md:w-auto'>
-      <div className='flex items-center py-4'><Input
-        placeholder='Filter expenses...'
-        value={(table.getColumn('value')
-            ?.getFilterValue() as string) ?? ''}
-        onChange={(event) =>
-            table.getColumn('value')
-              ?.setFilterValue(event.target.value)}
-        className='max-w'
-      />
+      <div className='flex items-center py-4'>
+        <Input
+          placeholder='Filter expenses...'
+          value={(table.getColumn('value')?.getFilterValue() as string) ?? ''}
+          onChange={(event) =>
+            table.getColumn('value')?.setFilterValue(event.target.value)}
+          className='max-w'
+        />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant='outline' className='ml-4'>
@@ -188,12 +209,11 @@ export function DataTable({ data }: {data: Payment[]}) {
                   key={column.id}
                   className='capitalize'
                   checked={column.getIsVisible()}
-                  onCheckedChange={(value) =>
-                      column.toggleVisibility(value)}
+                  onCheckedChange={(value) => column.toggleVisibility(value)}
                 >
                   {column.id}
                 </DropdownMenuCheckboxItem>
-                ))}
+              ))}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -205,13 +225,13 @@ export function DataTable({ data }: {data: Payment[]}) {
                 {headerGroup.headers.map((header) => (
                   <TableHead key={header.id}>
                     {header.isPlaceholder
-                        ? null
-                        : flexRender(
+                      ? null
+                      : flexRender(
                           header.column.columnDef.header,
                           header.getContext(),
                         )}
                   </TableHead>
-                  ))}
+                ))}
               </TableRow>
             ))}
           </TableHeader>
@@ -248,7 +268,8 @@ export function DataTable({ data }: {data: Payment[]}) {
       <div className='flex items-center justify-end space-x-2 py-4'>
         <div className='flex-1 text-xs md:text-sm text-muted-foreground text-center md:text-left'>
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
-          {table.getFilteredRowModel().rows.length} row(s) <br className='md:hidden' /> selected
+          {table.getFilteredRowModel().rows.length} row(s){' '}
+          <br className='md:hidden' /> selected
         </div>
         <div className='flex-auto md:flex-grow-0 space-x-2'>
           <Button

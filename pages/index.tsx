@@ -1,13 +1,17 @@
-import { MainPage } from '@/pages/main';
-import { getExpenses } from '@/shared/api/get-expenses';
+import { fork, allSettled, serialize } from 'effector';
+import { MainPage, pageStarted } from '@/pages/main';
 
 export default function Main() {
   return <MainPage />;
 }
 
 export async function getStaticProps() {
-  await getExpenses.start();
+  const scope = fork();
+  await allSettled(pageStarted, { scope });
+
   return {
-    props: {},
+    props: {
+      values: serialize(scope),
+    },
   };
 }

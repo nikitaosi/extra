@@ -18,7 +18,8 @@
     "eslint:recommended",
     "prettier",
     "airbnb",
-    "@feature-sliced"
+    "@feature-sliced",
+    "plugin:effector/react"
   ],
   "plugins": [
     "unicorn",
@@ -26,6 +27,7 @@
     "react-hooks",
     "jsx-a11y",
     "react",
+    "effector",
     "prettier"
   ],
   "rules": {
