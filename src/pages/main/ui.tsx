@@ -6,6 +6,7 @@ import type { NextPage } from 'next';
 import { useState, useEffect, useCallback, Dispatch } from 'react';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
+import { formSubmitted } from '@/pages/main/model';
 import { fetchExpensesQuery } from '@/shared/api/get-expenses';
 import { Button } from '@/shared/ui/button';
 import { DatePicker } from '@/shared/ui/datepicker';
@@ -50,19 +51,19 @@ const Form = ({
   // setData,
 }: {
   setOpened: Dispatch<boolean>;
-  setData: Dispatch<Payment[]>;
 }) => {
   const form = useForm<Payment>();
   const { toast } = useToast();
-  const onSubmit: SubmitHandler<Payment> = (values: Payment) => {
+  const onSubmit: SubmitHandler<Payment> = () => {
     // eslint-disable-next-line no-console
-    console.log(values);
+    // console.log(values);
     setOpened(false);
+    formSubmitted();
     // setData([...data, values]);
     toast({
       title: 'Done',
       description: 'Your expense has been added',
-      duration: 3000,
+      duration: 2000,
     });
   };
 
@@ -240,7 +241,6 @@ export const MainPage: NextPage = () => {
             </DialogHeader>
             <Form
               setOpened={setOpened}
-              setData={() => {}}
             />
           </DialogContent>
         </Dialog>
