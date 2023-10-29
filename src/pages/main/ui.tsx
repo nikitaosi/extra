@@ -6,7 +6,7 @@ import type { NextPage } from 'next';
 import { useState, useEffect, useCallback, Dispatch } from 'react';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
-import { formSubmitted } from '@/pages/main/model';
+import { formSubmitted, handleChange } from '@/pages/main/model';
 import { fetchExpensesQuery } from '@/shared/api/get-expenses';
 import { Button } from '@/shared/ui/button';
 import { DatePicker } from '@/shared/ui/datepicker';
@@ -48,18 +48,15 @@ $formOpened.on(submitModal, (opened) => !opened);
 
 const Form = ({
   setOpened,
-  // setData,
-}: {
+} // setData,
+: {
   setOpened: Dispatch<boolean>;
 }) => {
   const form = useForm<Payment>();
   const { toast } = useToast();
   const onSubmit: SubmitHandler<Payment> = () => {
-    // eslint-disable-next-line no-console
-    // console.log(values);
     setOpened(false);
     formSubmitted();
-    // setData([...data, values]);
     toast({
       title: 'Done',
       description: 'Your expense has been added',
@@ -90,7 +87,13 @@ const Form = ({
                   type='number'
                   autoComplete='off'
                   value={value}
-                  onChange={onChange}
+                  onChange={(e) => {
+                    handleChange({
+                      name: name.slice(11),
+                      value: e.target.value,
+                    });
+                    onChange(e.target.value);
+                  }}
                   name={name}
                   // onKeyDown={() => handleKey}
                 />
@@ -109,7 +112,13 @@ const Form = ({
                 <FormLabel>Currency</FormLabel>
                 <FormControl>
                   <Select
-                    onValueChange={onChange}
+                    onValueChange={(e) => {
+                      handleChange({
+                        name: name.slice(11),
+                        value: e,
+                      });
+                      onChange(e);
+                    }}
                     name={name}
                     value={value}
                     defaultValue='lari'
@@ -136,7 +145,13 @@ const Form = ({
                 <FormLabel>Category</FormLabel>
                 <FormControl>
                   <Select
-                    onValueChange={onChange}
+                    onValueChange={(e) => {
+                      handleChange({
+                        name: name.slice(36),
+                        value: e,
+                      });
+                      onChange(e);
+                    }}
                     name={name}
                     value={value}
                     defaultValue='Grocery'
@@ -194,10 +209,10 @@ export const MainPage: NextPage = () => {
   const [opened, setOpened] = useState<boolean>(false);
 
   const handleKeyPress = useCallback(
-    (event: Event) => {
+    (event: KeyboardEvent) => {
       if (
-      // @ts-ignore
-        (event.altKey && event.key === 'a') || (event.altKey && event.key === 'ф')
+        (event.altKey && event.key === 'a')
+        || (event.altKey && event.key === 'ф')
       ) {
         setOpened(!opened);
       }
@@ -239,9 +254,7 @@ export const MainPage: NextPage = () => {
             <DialogHeader>
               <DialogTitle>Add new expense</DialogTitle>
             </DialogHeader>
-            <Form
-              setOpened={setOpened}
-            />
+            <Form setOpened={setOpened} />
           </DialogContent>
         </Dialog>
         <DataTable data={tableData} />

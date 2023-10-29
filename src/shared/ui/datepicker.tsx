@@ -11,7 +11,7 @@ import {
   PopoverTrigger,
 } from './popover';
 
-export function DatePicker({ date, setDate }:{ date: Date, setDate: () => void }) {
+export function DatePicker({ date, setDate }:{ date: Date, setDate: (e: Date | undefined) => void }) {
   return (
     <Popover>
       <PopoverTrigger asChild>
