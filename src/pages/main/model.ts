@@ -22,7 +22,8 @@ export type Expense = {
   category: Category;
 };
 
-type ExpenseProp = Record<string, string>;
+// #TODO specify type here
+type ExpenseProp = { [x: string]: unknown; };
 
 export const pageStarted = createEvent();
 
@@ -53,7 +54,7 @@ const submitFormFx = createEffect((data: Expense) => {
 });
 export const handleChange = setField.prepend(
   (payload: ExpenseProp): ExpenseProp => ({
-    [payload.name]: payload.value,
+    [payload.name as string]: payload.value,
   }),
 );
 

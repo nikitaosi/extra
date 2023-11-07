@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form';
 import { formSubmitted, handleChange } from '@/pages/main/model';
 import { fetchExpensesQuery } from '@/shared/api/get-expenses';
 import { Button } from '@/shared/ui/button';
-import { DatePicker } from '@/shared/ui/datepicker';
+import { DateTimePicker } from '@/shared/ui/date-time-picker';
 import {
   Dialog,
   DialogContent,
@@ -173,11 +173,20 @@ const Form = ({
         <FormField
           control={form.control}
           name='attributes.date'
-          render={({ field: { onChange, value } }) => (
+          render={({ field: { onChange, value, name } }) => (
             <FormItem className='space-y-1'>
               <FormLabel>Date</FormLabel>
               <FormControl>
-                <DatePicker date={value || new Date()} setDate={onChange} />
+                <DateTimePicker
+                  date={value || new Date()}
+                  setDate={(e) => {
+                  handleChange({
+                  name: name.slice(11),
+                  value: e,
+                });
+                  onChange(e);
+                }}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -187,11 +196,20 @@ const Form = ({
           control={form.control}
           name='attributes.description'
           defaultValue=''
-          render={({ field }) => (
+          render={({ field: { onChange, name } }) => (
             <FormItem className='space-y-1'>
               <FormLabel>Description</FormLabel>
               <FormControl>
-                <Textarea placeholder='another spending' {...field} />
+                <Textarea
+                  placeholder='another spending'
+                  onChange={(e) => {
+                    handleChange({
+                      name: name.slice(11),
+                      value: e.target.value,
+                    });
+                    onChange(e.target.value);
+                  }}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
