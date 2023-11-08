@@ -22,8 +22,7 @@ export type Expense = {
   category: Category;
 };
 
-// #TODO specify type here
-type ExpenseProp = { [x: string]: unknown; };
+type ExpenseProp = { [key: string]: string | Date };
 
 export const pageStarted = createEvent();
 
@@ -44,6 +43,7 @@ const $expense: Store<Expense> = createStore<Expense>({
 }).on(
   setField,
   (defaultObj, newValue: ExpenseProp) => {
+    /* eslint-disable no-console */
     console.log(newValue);
     return { ...defaultObj, ...newValue };
   },
@@ -53,7 +53,7 @@ const submitFormFx = createEffect((data: Expense) => {
   addExpenseMutation.start({ ...data });
 });
 export const handleChange = setField.prepend(
-  (payload: ExpenseProp): ExpenseProp => ({
+  (payload: ExpenseProp) => ({
     [payload.name as string]: payload.value,
   }),
 );
