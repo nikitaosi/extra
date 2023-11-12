@@ -37,7 +37,7 @@ import {
 export type Payment = {
   id: string;
   attributes: {
-    value: number;
+    amount: number;
     currency: 'lari' | 'dollar';
     date: Date;
     description: string;
@@ -90,14 +90,14 @@ export const columns: ColumnDef<Payment>[] = [
     ),
   },
   {
-    accessorKey: 'value',
-    header: 'Value',
+    accessorKey: 'amount',
+    header: 'Amount',
     cell: ({
       row: {
         original: { attributes: row },
       },
     }) => {
-      const amount = row.value;
+      const { amount } = row;
       const { currency } = row;
       const formatted = new Intl.NumberFormat('en-US', {
         style: 'currency',
@@ -189,7 +189,7 @@ export function DataTable({ data }: { data: Payment[] }) {
       <div className='flex items-center py-4'>
         <Input
           placeholder='Filter expenses...'
-          value={(table.getColumn('value')?.getFilterValue() as string) ?? ''}
+          value={(table.getColumn('amount')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
             table.getColumn('value')?.setFilterValue(event.target.value)}
           className='max-w'

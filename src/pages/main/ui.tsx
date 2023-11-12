@@ -6,7 +6,7 @@ import type { NextPage } from 'next';
 import { useState, useEffect, useCallback, Dispatch } from 'react';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
-import { formSubmitted, handleChange } from '@/pages/main/model';
+import { ExpenseProp, formSubmitted, handleChange } from '@/pages/main/model';
 import { fetchExpensesQuery } from '@/shared/api/get-expenses';
 import { Button } from '@/shared/ui/button';
 import { DateTimePicker } from '@/shared/ui/date-time-picker';
@@ -76,11 +76,11 @@ const Form = ({
       <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-3'>
         <FormField
           control={form.control}
-          name='attributes.value'
+          name='attributes.amount'
           defaultValue={100}
           render={({ field: { onChange, name, value } }) => (
             <FormItem className='space-y-1'>
-              <FormLabel>Value</FormLabel>
+              <FormLabel>Amount</FormLabel>
               <FormControl>
                 <Input
                   placeholder='100'
@@ -89,9 +89,9 @@ const Form = ({
                   value={value}
                   onChange={(e) => {
                     handleChange({
-                      name: name.slice(11),
+                      name: 'amount',
                       value: e.target.value,
-                    });
+                    } as ExpenseProp);
                     onChange(e.target.value);
                   }}
                   name={name}
@@ -114,9 +114,9 @@ const Form = ({
                   <Select
                     onValueChange={(e) => {
                       handleChange({
-                        name: name.slice(11),
+                        name: 'currency',
                         value: e,
-                      });
+                      } as ExpenseProp);
                       onChange(e);
                     }}
                     name={name}
@@ -147,9 +147,9 @@ const Form = ({
                   <Select
                     onValueChange={(e) => {
                       handleChange({
-                        name: name.slice(36),
+                        name: 'category',
                         value: e,
-                      });
+                      } as ExpenseProp);
                       onChange(e);
                     }}
                     name={name}
@@ -180,12 +180,12 @@ const Form = ({
                 <DateTimePicker
                   date={value || new Date()}
                   setDate={(e) => {
-                  handleChange({
-                  name: name.slice(11),
-                  value: e,
-                });
-                  onChange(e);
-                }}
+                    handleChange({
+                      name: name.slice(11),
+                      value: e,
+                    } as ExpenseProp);
+                    onChange(e);
+                  }}
                 />
               </FormControl>
               <FormMessage />
@@ -206,7 +206,7 @@ const Form = ({
                     handleChange({
                       name: name.slice(11),
                       value: e.target.value,
-                    });
+                    } as ExpenseProp);
                     onChange(e.target.value);
                   }}
                 />

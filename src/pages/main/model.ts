@@ -4,25 +4,27 @@ import {
   createStore,
   sample,
   Store,
-  Event,
 } from 'effector';
 import { addExpenseMutation } from '@/shared/api/create-expense';
 import { fetchExpensesQuery } from '@/shared/api/get-expenses';
 
 enum Category {
   'Groceries' = 1,
-  'House' = 2,
+  'House',
 }
 
 export type Expense = {
-  value: number;
+  amount: number;
   currency: 'lari' | 'dollar';
   date: Date;
   description: string;
   category: Category;
 };
 
-type ExpenseProp = { [key: string]: string | Date };
+export type ExpenseProp = {
+  name: keyof Expense;
+  value: Expense[keyof Expense];
+};
 
 export const pageStarted = createEvent();
 
@@ -32,16 +34,16 @@ sample({
 });
 
 export const formSubmitted = createEvent();
-const setField: Event<ExpenseProp> = createEvent();
+export const setFieldEvent = createEvent<ExpenseProp>();
 
 const $expense: Store<Expense> = createStore<Expense>({
-  value: 0,
-  currency: 'dollar',
+  amount: 0,
+  currency: 'lari',
   date: new Date(),
-  description: 'default',
+  description: '-',
   category: 1,
 }).on(
-  setField,
+  setFieldEvent,
   (defaultObj, newValue: ExpenseProp) => {
     /* eslint-disable no-console */
     console.log(newValue);
@@ -52,10 +54,10 @@ const $expense: Store<Expense> = createStore<Expense>({
 const submitFormFx = createEffect((data: Expense) => {
   addExpenseMutation.start({ ...data });
 });
-export const handleChange = setField.prepend(
+export const handleChange = setFieldEvent.prepend(
   (payload: ExpenseProp) => ({
-    [payload.name as string]: payload.value,
-  }),
+    [payload.name]: payload.value,
+  }) as ExpenseProp,
 );
 
 sample({
