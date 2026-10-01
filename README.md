@@ -33,4 +33,6 @@ pnpm test
 pnpm build
 ```
 
+GitHub Actions runs the same checks on pushes and pull requests. Changes to the API contract should be regenerated in the backend and synced here before committing.
+
 Deployment is not configured yet. The intended frontend host is Netlify; the API and database host remain to be chosen. The cookie and API origin settings must be reviewed together before deploying across domains.
