@@ -1,4 +1,4 @@
-export type CurrencyCode = 'GEL' | 'USD';
+export type CurrencyCode = 'GEL' | 'USD' | 'THB';
 
 const maxMinor = 99_999_999_999n;
 
@@ -17,5 +17,5 @@ export function amountInput(minor: bigint): string {
 }
 
 export function formatMoney(minor: bigint, currency: CurrencyCode): string {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(Number(minor) / 100);
+  return new Intl.NumberFormat('en-TH', { style: 'currency', currency }).format(Number(minor) / 100);
 }

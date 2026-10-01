@@ -15,7 +15,9 @@ test('rejects invalid and out-of-range amounts', () => {
   }
 });
 
-test('formats both supported currencies', () => {
+test('formats supported currencies for an English-speaking Thailand locale', () => {
   assert.match(formatMoney(1234n, 'GEL'), /12\.34/);
   assert.match(formatMoney(1234n, 'USD'), /12\.34/);
+  assert.match(formatMoney(1234n, 'THB'), /12\.34/);
+  assert.match(formatMoney(1234n, 'THB'), /THB|฿/);
 });
