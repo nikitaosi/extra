@@ -35,4 +35,4 @@ pnpm build
 
 GitHub Actions runs the same checks on pushes and pull requests. Changes to the API contract should be regenerated in the backend and synced here before committing.
 
-Deployment is not configured yet. The intended frontend host is Netlify; the API and database host remain to be chosen. The cookie and API origin settings must be reviewed together before deploying across domains.
+For deployment, the frontend uses its own `/api` path by default. Netlify proxies that path to the hosted API so the session cookie remains same-origin. `NEXT_PUBLIC_API_URL` can still override the address for local or non-Netlify setups. Do not point the browser directly at an unrelated `onrender.com` domain: the `SameSite=Lax` session cookie will not accompany cross-site API requests.

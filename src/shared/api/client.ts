@@ -6,7 +6,7 @@ function apiUrl(): string {
   const configured = process.env.NEXT_PUBLIC_API_URL;
   if (configured) return configured.replace(/\/$/, '');
   if (process.env.NODE_ENV !== 'production') return 'http://localhost:3101';
-  throw new Error('NEXT_PUBLIC_API_URL is required');
+  return `${window.location.origin}/api`;
 }
 
 function transport() {

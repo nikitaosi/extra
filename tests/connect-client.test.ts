@@ -30,3 +30,33 @@ test('auth client sends binary Protobuf with browser credentials', async () => {
     else process.env.NEXT_PUBLIC_API_URL = originalUrl;
   }
 });
+
+test('hosted client uses the same-origin API proxy by default', async () => {
+  const originalFetch = globalThis.fetch;
+  const originalUrl = process.env.NEXT_PUBLIC_API_URL;
+  const originalMode = process.env.NODE_ENV;
+  const originalWindow = globalThis.window;
+  delete process.env.NEXT_PUBLIC_API_URL;
+  Object.defineProperty(process.env, 'NODE_ENV', { configurable: true, enumerable: true, writable: true, value: 'production' });
+  Object.defineProperty(globalThis, 'window', {
+    configurable: true,
+    value: { location: { origin: 'https://extra.netlify.app' } },
+  });
+  globalThis.fetch = async (input) => {
+    assert.equal(String(input), 'https://extra.netlify.app/api/extra.v1.AuthService/Me');
+    return new Response(toBinary(MeResponseSchema, create(MeResponseSchema, { email: 'user@example.com' })), {
+      headers: { 'content-type': 'application/proto' },
+    });
+  };
+
+  try {
+    await authClient().me({});
+  } finally {
+    globalThis.fetch = originalFetch;
+    if (originalUrl === undefined) delete process.env.NEXT_PUBLIC_API_URL;
+    else process.env.NEXT_PUBLIC_API_URL = originalUrl;
+    if (originalMode === undefined) Reflect.deleteProperty(process.env, 'NODE_ENV');
+    else Object.defineProperty(process.env, 'NODE_ENV', { configurable: true, enumerable: true, writable: true, value: originalMode });
+    Object.defineProperty(globalThis, 'window', { configurable: true, value: originalWindow });
+  }
+});
