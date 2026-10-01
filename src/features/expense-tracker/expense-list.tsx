@@ -1,6 +1,7 @@
 import {
   ArrowLeft,
   ArrowRight,
+  ChevronDown,
   LoaderCircle,
   Pencil,
   RefreshCw,
@@ -77,17 +78,20 @@ export function ExpenseList({
             aria-label="Search descriptions"
           />
         </label>
-        <select
-          className="filter-select"
-          value={categoryId}
-          onChange={(event) => onCategoryChange(event.target.value)}
-          aria-label="Filter by category"
-        >
-          <option value="">All categories</option>
-          {categories.map((category) => (
-            <option key={category.id} value={category.id}>{category.name}</option>
-          ))}
-        </select>
+        <div className="filter-select-wrap">
+          <select
+            className="filter-select"
+            value={categoryId}
+            onChange={(event) => onCategoryChange(event.target.value)}
+            aria-label="Filter by category"
+          >
+            <option value="">All categories</option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>{category.name}</option>
+            ))}
+          </select>
+          <ChevronDown className="filter-select-icon" size={16} aria-hidden="true" />
+        </div>
       </div>
       {categoriesError && <p className="error-text inline-error" role="alert">Could not load categories: {categoriesError}</p>}
       {error ? (
