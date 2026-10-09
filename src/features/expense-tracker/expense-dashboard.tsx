@@ -138,6 +138,7 @@ export function ExpenseDashboard() {
     setDeletingId(expense.id);
     try {
       await expenseClient().deleteExpense({ id: expense.id });
+      if (currentExpenses.length === 1 && page > 1) setPage(page - 1);
       await queryClient.invalidateQueries({ queryKey: ['expenses'] });
       setNotice('Expense deleted.');
     } catch (error) {

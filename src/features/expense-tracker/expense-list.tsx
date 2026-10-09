@@ -72,6 +72,7 @@ export function ExpenseList({
           <Search size={18} aria-hidden="true" />
           <input
             type="search"
+            maxLength={100}
             placeholder="Search descriptions"
             value={draftSearch}
             onChange={(event) => onDraftSearch(event.target.value)}
