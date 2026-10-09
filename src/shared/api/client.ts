@@ -13,6 +13,7 @@ function transport() {
   return createConnectTransport({
     baseUrl: apiUrl(),
     useBinaryFormat: true,
+    defaultTimeoutMs: 60_000,
     fetch: (input, init) => fetch(input, { ...init, credentials: 'include' }),
   });
 }
