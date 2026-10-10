@@ -17,7 +17,12 @@ import { SignInPanel } from './sign-in-panel';
 import { ThemeToggle } from './theme-toggle';
 
 function errorMessage(error: unknown): string {
-  if (error instanceof ConnectError) return error.rawMessage || error.message;
+  if (error instanceof ConnectError) {
+    if ([Code.DeadlineExceeded, Code.Unavailable, Code.Canceled].includes(error.code)) {
+      return 'The demo server could not be reached. It may still be waking up. Please try again.';
+    }
+    return error.rawMessage || error.message;
+  }
   return error instanceof Error ? error.message : 'Something went wrong. Please try again.';
 }
 
@@ -148,11 +153,12 @@ export function ExpenseDashboard() {
     }
   }
 
-  if (me.isPending) {
+  if (me.isPending || (!signedIn && me.isFetching)) {
     return (
-      <main className="centered-state">
-        <LoaderCircle className="spin" size={28} />
+      <main className="centered-state" role="status" aria-live="polite">
+        <LoaderCircle className="spin" size={28} aria-hidden="true" />
         <p>Connecting to your expenses…</p>
+        <p>Demo server is waking up; first load may take a little while.</p>
       </main>
     );
   }
@@ -161,7 +167,7 @@ export function ExpenseDashboard() {
   if (!signedIn) {
     return (
       <SignInPanel
-        apiError={apiError ? errorMessage(me.error) : ''}
+        apiError={apiError ? 'The demo server did not respond in time or could not be reached. It may still be waking up. Please try again.' : ''}
         loginBusy={loginBusy}
         loginError={loginError}
         theme={theme}

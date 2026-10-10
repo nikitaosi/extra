@@ -1,6 +1,6 @@
 'use client';
 
-import { LoaderCircle, ShieldCheck, WalletCards } from 'lucide-react';
+import { ShieldCheck, WalletCards } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import type { Theme } from '@/shared/hooks/use-theme';
 import { ThemeToggle } from './theme-toggle';
@@ -29,6 +29,7 @@ export function SignInPanel({
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (loginBusy) return;
     onLogin(email, password);
   }
 
@@ -44,7 +45,7 @@ export function SignInPanel({
         <p className="muted">Sign in to view and manage your expenses.</p>
         {apiError && (
           <div className="notice failure" role="alert">
-            <span>Cannot reach the API: {apiError}</span>
+            <span>{apiError}</span>
             <button className="button secondary" type="button" onClick={onRetry}>Retry</button>
           </div>
         )}
@@ -69,10 +70,11 @@ export function SignInPanel({
               required
             />
           </label>
+          {loginBusy && <p role="status" className="muted">Connecting… Demo server is waking up; first load may take a little while.</p>}
           {loginError && <p role="alert" className="error-text">{loginError}</p>}
-          <button className="button primary wide" type="submit" disabled={loginBusy}>
-            {loginBusy ? <LoaderCircle className="spin" size={18} /> : <ShieldCheck size={18} />}
-            Sign in
+          <button className="button primary wide login-button" type="submit" disabled={loginBusy} aria-busy={loginBusy}>
+            {loginBusy ? <span className="login-loader" aria-hidden="true" /> : <ShieldCheck size={18} aria-hidden="true" />}
+            {loginBusy ? 'Signing in…' : 'Sign in'}
           </button>
         </form>
         <p className="auth-footnote">
